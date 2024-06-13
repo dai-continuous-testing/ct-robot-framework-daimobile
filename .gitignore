@@ -1,0 +1,7 @@
+.venv
+results/output.xml
+results/log.html
+results/report.html
+resources/cloudCredentialsLOCAL.robot
+**/**/__pycache__/
+results/*
