@@ -1,6 +1,26 @@
-<h1>This is example project boilerplate code for Robot Framework and Digital.ai's reporter integration.</h1>
+<h1>Example project boilerplate code for Robot Framework and Digital.ai's reporter integration.</h1>
 
-<h3>Project file structure:</h3>
+<h2>Content</h2>
+This repository contains basic setup for Robot Framework and Digital.ai Continuous Testing solution. 
+<a href="https://digital.ai/products/continuous-testing/">https://digital.ai/products/continuous-testing/</a>
+
+<br>
+The project core is written with Python (daiMobileLibrary.py) which can be easily added to existing project to reuse, or it can be used as a starting point. Once imported you can start using Digital.ai Robot Framework keywords in your project. 
+
+<h2>Example </h2>
+<h3>Test report before the changes (pure Robot Framework)</h3>
+
+![Example Image](images/before.png)
+
+<h3>Test report after the changes (with Digital.ai library)</h3>
+
+![Example Image](images/after.png)
+
+<h3>Reports page in digital.ai Continuous Testing cloud</h3>
+
+![Example Image](images/reports.png)
+
+<h2>Project file structure:</h2>
 <ul>
     <li><b>resources/capabilities/</b> - holds example capabilities for devices: Android and iOS device, and Chrome browser</li>
     <li><b>resources/cloudCredentials.robot</b> - holds cloud credentials (cloud URL and access key)</li>
@@ -10,20 +30,20 @@
     <li><b>results/</b> - destination folder for test results</li>
 </ul>
 
-<h3>Setup</h3>
-<h4>To install dependenecies:</h4>
+<h2>Setup</h2>
+<h3>To install dependenecies:</h3>
 <code>pip install -r requirements.txt</code>
-<h4>Cloud and device settings</h4>
+<h3>Cloud and device settings</h3>
 After getting access key and setting cloud related paramters in cloudCredentials.robot please set platform name and deviceQuery in deviceCapabilities.
 
 
-<h3>Execution</h3>
+<h2>Execution</h2>
 To run test script in the command line:<br/>
 <code>robo -d results/ tests/androidNativeApp.robot </code><br/>
 <code>robo -d results/ tests/*</code>
 
 
-<h3>Tests</h3>
+<h2>Tests</h2>
 There are few ready to use test cases <br>
 <ul>
     <li><b>tests/examples/daiFeatures.robot</b> - contains examples of Digital.ai features like measuring performance and voice assistance</li>
