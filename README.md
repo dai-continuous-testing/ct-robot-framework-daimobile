@@ -1,22 +1,23 @@
 <h1>Example project boilerplate code for Robot Framework and Digital.ai's reporter integration.</h1>
 
 <h2>Content</h2>
-This repository contains basic setup for Robot Framework and Digital.ai Continuous Testing solution. 
-<a href="https://digital.ai/products/continuous-testing/">https://digital.ai/products/continuous-testing/</a>
+This repository is built using Robot Framework with Python, and is designed to run against [Digital.ai's Continuous Testing solution](https://digital.ai/products/continuous-testing/).
 
 <br>
-The project core is written with Python (daiMobileLibrary.py) which can be easily added to existing project to reuse, or it can be used as a starting point. Once imported you can start using Digital.ai Robot Framework keywords in your project. 
+The core structure of the project can be found in resources/daiMobileLibrary.py which handles many things such as the Appium Driver creation, but also a set of re-usable functions that can be incorporated throughout the Tests to ensure that the Test Results after the Test Execution is accurate and easy to use.
 
-<h2>Example </h2>
-<h3>Test report before the changes (pure Robot Framework)</h3>
+Use the class resources/daiMobileLibrary.py as a starting point to build on top of.
+
+<h2>Examples </h2>
+<h3>Here is an example of a Test Report before implementing Best Practices (pure Robot Framework)</h3>
 
 ![Example Image](images/before.png)
 
-<h3>Test report after the changes (with Digital.ai library)</h3>
+<h3>Here is an example of a Test Report after implementing Best Practices (with Digital.ai library)</h3>
 
 ![Example Image](images/after.png)
 
-<h3>Reports page in digital.ai Continuous Testing cloud</h3>
+<h3>Here is an example of output on both tests on the Reports Page </h3>
 
 ![Example Image](images/reports.png)
 
@@ -31,20 +32,26 @@ The project core is written with Python (daiMobileLibrary.py) which can be easil
 </ul>
 
 <h2>Setup</h2>
-<h3>To install dependenecies:</h3>
+<h3>To install dependencies:</h3>
 <code>pip install -r requirements.txt</code>
-<h3>Cloud and device settings</h3>
-After getting access key and setting cloud related paramters in cloudCredentials.robot please set platform name and deviceQuery in deviceCapabilities.
+<h3>Setup of the tests, Cloud and Device configurations</h3>
+After setting your Access Key and the URL for your environment in ```cloudCredentials.robot```, please set platformName and deviceQuery in ```appiumCapabilities.py```.
 
+References to the various topics:
+
+[Obtain your Access Key](https://docs.digital.ai/bundle/TE/page/obtain_your_access_key.html)
+[Appium Capabilities](https://docs.digital.ai/bundle/TE/page/appium_oss_supported_capabilities.html)
+[Device Query](https://docs.digital.ai/bundle/TE/page/device_queries.html)
 
 <h2>Execution</h2>
 To run test script in the command line:<br/>
+
 <code>robo -d results/ tests/androidNativeApp.robot </code><br/>
 <code>robo -d results/ tests/*</code>
 
 
 <h2>Tests</h2>
-There are few ready to use test cases <br>
+<br>There are a few tests ready to run already<br/>
 <ul>
     <li><b>tests/examples/daiFeatures.robot</b> - contains examples of Digital.ai features like measuring performance and voice assistance</li>
     <li><b>tests/examples/daiReporter.robot</b> - contains examples of tests to showcase reporter capabilities</li>
