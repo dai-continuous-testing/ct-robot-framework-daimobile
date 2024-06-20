@@ -1,4 +1,4 @@
-<h1>Example project boilerplate code for Robot Framework and Digital.ai's reporter integration.</h1>
+<h1>Automation Project for Robot Framework and Digital.ai's Continuous Testing Reporter integration.</h1>
 
 <h2>Content</h2>
 This repository is built using Robot Framework with Python, and is designed to run against Digital.ai's Continuous Testing solution, find out more on our website: https://digital.ai/products/continuous-testing  
