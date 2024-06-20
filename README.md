@@ -1,9 +1,10 @@
 <h1>Example project boilerplate code for Robot Framework and Digital.ai's reporter integration.</h1>
 
 <h2>Content</h2>
-This repository is built using Robot Framework with Python, and is designed to run against Digital.ai's [Continuous Testing](https://digital.ai/products/continuous-testing) solution.  
+This repository is built using Robot Framework with Python, and is designed to run against Digital.ai's Continuous Testing solution, find out more on our website: https://digital.ai/products/continuous-testing  
 
 
+  
 The core structure of the project can be found in resources/daiMobileLibrary.py which handles many things such as the Appium Driver creation, but also a set of re-usable functions that can be incorporated throughout the Tests to ensure that the Test Results after the Test Execution is accurate and easy to use.  
 
 
