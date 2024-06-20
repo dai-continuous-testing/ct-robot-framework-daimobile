@@ -3,7 +3,8 @@
 <h2>Content</h2>
 This repository is built using Robot Framework with Python, and is designed to run against [Digital.ai's Continuous Testing solution](https://digital.ai/products/continuous-testing).<br/>
 
-The core structure of the project can be found in resources/daiMobileLibrary.py which handles many things such as the Appium Driver creation, but also a set of re-usable functions that can be incorporated throughout the Tests to ensure that the Test Results after the Test Execution is accurate and easy to use.<br/>
+The core structure of the project can be found in resources/daiMobileLibrary.py which handles many things such as the Appium Driver creation, but also a set of re-usable functions that can be incorporated throughout the Tests to ensure that the Test Results after the Test Execution is accurate and easy to use.  
+
 
 Use the class resources/daiMobileLibrary.py as a starting point to build on top of.<br/>
 
