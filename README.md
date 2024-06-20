@@ -38,7 +38,7 @@ Use the class resources/daiMobileLibrary.py as a starting point to build on top 
 <h3>To install dependencies:</h3>
 <code>pip install -r requirements.txt</code>
 <h3>Setup of the tests, Cloud and Device configurations</h3>
-After setting your Access Key and the URL for your environment in **cloudCredentials.robot**, please set platformName and deviceQuery in **appiumCapabilities.py**.
+After setting your Access Key and the URL for your environment in <code>cloudCredentials.robot</code, please set platformName and deviceQuery in <code>appiumCapabilities.py</code.
 
 References to the various topics:
 
