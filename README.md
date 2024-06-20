@@ -27,7 +27,7 @@ Use the class resources/daiMobileLibrary.py as a starting point to build on top 
 <h2>Project file structure:</h2>
 <ul>
     <li><b>resources/capabilities/</b> - holds example capabilities for devices: Android and iOS device, and Chrome browser</li>
-    <li><b>resources/cloudCredentials.robot</b> - holds cloud credentials (cloud URL and access key)</li>
+    <li><b>resources/cloudCredentials.robot</b> - holds cloud credentials (Cloud URL and Access Key)</li>
     <li><b>resources/daiMobileLibrary.py</b> - contains definitions, logic and keywords for DAI reporter</li>
     <li><b>steps/</b> - contains an extra layer of business logic (BDD)</li>
     <li><b>tests/</b> - contains tests files</li>
@@ -38,7 +38,7 @@ Use the class resources/daiMobileLibrary.py as a starting point to build on top 
 <h3>To install dependencies:</h3>
 <code>pip install -r requirements.txt</code>
 <h3>Setup of the tests, Cloud and Device configurations</h3>
-After setting your Access Key and the URL for your environment in <code>cloudCredentials.robot</code, please set platformName and deviceQuery in <code>appiumCapabilities.py</code.
+After setting your Access Key and the URL for your environment in <code>cloudCredentials.robot</code>, please set platformName and deviceQuery in <code>appiumCapabilities.py</code>.
 
 References to the various topics:
 
