@@ -5,3 +5,4 @@ results/report.html
 resources/cloudCredentialsLOCAL.robot
 **/**/__pycache__/
 results/*
+.DS_Store

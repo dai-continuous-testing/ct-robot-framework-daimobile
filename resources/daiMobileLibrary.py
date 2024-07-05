@@ -1,3 +1,4 @@
+import os
 import inspect
 import traceback
 from datetime import datetime
@@ -65,7 +66,12 @@ class daiMobileLibrary(AppiumLibrary):
         
         def start_session(self, suite_name, **kwargs):
                 cloudUrl = self.build_in.get_variable_value("${cloudUrl}")
-                accessKey = self.build_in.get_variable_value("${accessKey}")
+                accessKeyEnvVarName = self.build_in.get_variable_value("${accessKeyEnvVarName}")
+                accessKey = os.environ[accessKeyEnvVarName]
+                if not accessKey:
+                        self.build_in.fail("Access key is empty, please set accessKey as a environment variable and provide its name in the accessKeyEnvVarName variable.")
+                        return -1
+
                 self.build_in.log_to_console("testing value of cloudUrl: {}".format(cloudUrl))
 
                 self.platform_name = platformName
