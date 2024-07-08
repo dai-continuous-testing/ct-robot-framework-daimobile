@@ -21,3 +21,4 @@ Test Teardown   Perform Test Teardown Actions
 02.DigitalAI voice assitant
     Portrait
     Activate Voice Assistance    open device settings
+    Add Test Property    key=voiceAssistant    value=enabled

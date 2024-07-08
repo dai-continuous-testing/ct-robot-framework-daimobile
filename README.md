@@ -50,8 +50,8 @@ References to the various topics:
 <h2>Execution</h2>
 To run test script in the command line:<br/>
 
-<code>robo -d results/ tests/androidNativeApp.robot </code><br/>
-<code>robo -d results/ tests/*</code>
+<code>robot -d results/ tests/androidNativeApp.robot </code><br/>
+<code>robot -d results/ tests/*</code>
 
 
 <h2>Tests</h2>
