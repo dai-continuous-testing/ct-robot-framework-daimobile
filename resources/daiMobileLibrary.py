@@ -11,6 +11,9 @@ from functools import wraps
 from timeouts import global_timeout
 from capabilities.appiumCapabilities import *
 
+from elementLocators.android_locators import android_locators
+from elementLocators.ios_locators import ios_locators
+
 log_level = "INFO"      # DEBUG => to add traceback on error
 
 def handle_exceptions(method):
@@ -66,11 +69,12 @@ class daiMobileLibrary(AppiumLibrary):
         
         def start_session(self, suite_name, **kwargs):
                 cloudUrl = self.build_in.get_variable_value("${cloudUrl}")
-                accessKeyEnvVarName = self.build_in.get_variable_value("${accessKeyEnvVarName}")
-                accessKey = os.environ[accessKeyEnvVarName]
-                if not accessKey:
-                        self.build_in.fail("Access key is empty, please set accessKey as a environment variable and provide its name in the accessKeyEnvVarName variable.")
-                        return -1
+                accessKey = self.build_in.get_variable_value("${accessKey}")
+                # RECOMMENDED: use environment variables for accessKey for security reasons
+                # accessKey = os.environ[accessKeyEnvVarName]
+                # if not accessKey:
+                #         self.build_in.fail("Access key is empty, please set accessKey as a environment variable and provide its name in the accessKeyEnvVarName variable.")
+                #         return -1
 
                 self.build_in.log_to_console("testing value of cloudUrl: {}".format(cloudUrl))
 
@@ -131,6 +135,15 @@ class daiMobileLibrary(AppiumLibrary):
         
         def do_some_black_magic(self):
                 self.report("Lord Voldemort hates Harry Potter", False, True)
+
+        def get_platform_specific_locator(self, locator_name):
+                if self.platform_name in ["ios", "iOS", "IOS"]:
+                        return ios_locators[locator_name]
+                elif self.platform_name in ["android", "Android", "ANDROID"]:
+                        return android_locators[locator_name]
+                else:
+                        self.build_in.fail("platform is not supported: {}".format(self.platform_name))
+                        return -1
 
         # REPORTER ------------------------------------------------------------------------
 
@@ -320,11 +333,13 @@ class daiMobileLibrary(AppiumLibrary):
         @keyword
         @handle_exceptions
         def click_element(self, locator):
+                locator = self.get_platform_specific_locator(locator)
                 return super().click_element(locator)
         
         @keyword
         @handle_exceptions
         def input_text(self, locator, text):
+                locator = self.get_platform_specific_locator(locator)
                 return super().input_text(locator, text)
 
         @keyword

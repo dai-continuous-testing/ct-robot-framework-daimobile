@@ -10,9 +10,9 @@ Those top level keywords intent to describe business logic.
 Login to ExperiBank app
     [Setup]    Start Group
     Portrait                                                                        
-	Input Text	        xpath=//*[@text='Username']	    company                                 
-	Input Text	        xpath=//*[@text='Password']	    company
-	Click Element	    xpath=//*[@resource-id='com.experitest.ExperiBank:id/loginButton']      
+	Input Text	        USERNAME_INPUT	    company                                 
+	Input Text	        PASSWORD_INPUT    company
+	Click Element	    LOGIN_BUTTON      
 	BuiltIn.Sleep	    5s
     [Teardown]    Stop Group    
 
