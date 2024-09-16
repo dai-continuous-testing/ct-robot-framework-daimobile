@@ -19,18 +19,18 @@ ${DEVICE_QUERY}          @os='${PLATFORM_NAME}' and @category='PHONE'
 ${ANDROID_PACKAGE}       com.experitest.ExperiBank
 ${ANDROID_ACTIVITY}      .LoginActivity
 
-*** Keywords ***
-Start Session
-    [Arguments]   ${SUITE_NAME}
-    Open Application
-        ...			${cloudUrl}	digitalai:accessKey=${accessKey}
-        ...			app=cloud:${ANDROID_PACKAGE}/${ANDROID_ACTIVITY}
-        ...			platformName=${PLATFORM_NAME}	
-        ...         appPackage=${ANDROID_PACKAGE}
-        ...			appActivity=${ANDROID_ACTIVITY}
-        ...         appiumVersion=${APPIUM_VERSION}
-        ...         testName=${SUITE_NAME} 
-        ...         deviceQuery=${DEVICE_QUERY}
+# *** Keywords ***
+# Start Session
+#     [Arguments]   ${SUITE_NAME}
+#     Open Application
+#         ...			${cloudUrl}	digitalai:accessKey=${accessKey}
+#         ...			app=cloud:${ANDROID_PACKAGE}/${ANDROID_ACTIVITY}
+#         ...			platformName=${PLATFORM_NAME}	
+#         ...         appPackage=${ANDROID_PACKAGE}
+#         ...			appActivity=${ANDROID_ACTIVITY}
+#         ...         appiumVersion=${APPIUM_VERSION}
+#         ...         testName=${SUITE_NAME} 
+#         ...         deviceQuery=${DEVICE_QUERY}
 
 *** Test Cases ***
 Login and perform payment

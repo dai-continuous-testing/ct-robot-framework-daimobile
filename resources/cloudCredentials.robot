@@ -1,3 +1,3 @@
 *** Variables ***
 ${cloudUrl}	    <your cloud url>
-${accessKeyEnvVarName}	<your access key>
+${accessKeyEnvVarName}	LFAB_ACCESS_KEY

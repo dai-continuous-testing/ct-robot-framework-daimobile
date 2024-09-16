@@ -6,3 +6,8 @@ resources/cloudCredentialsLOCAL.robot
 **/**/__pycache__/
 results/*
 .DS_Store
+.pabotsuitenames
+log.html
+output.xml
+pabot_results/
+report.html

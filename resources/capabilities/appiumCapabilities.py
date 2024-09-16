@@ -4,8 +4,10 @@ Specific platform capabilities are define in groups below.
 All capabilities here are required.
 '''
 appiumVersion='2.5.2'
-platformName='ios'
-deviceQuery=f"@os='{platformName}' and @category='PHONE' and @version >= '15'"
+platformName='android'
+deviceQuery=f"@os='{platformName}' and not(tag='dirty')"    # deviceQuery is used to select a device
+
+appCloudName='cloud:uniqueName=AppiumOssAndroid'    # it is translate to 'app' capability
 
 # Android specific
 androidPackage='com.experitest.ExperiBank'

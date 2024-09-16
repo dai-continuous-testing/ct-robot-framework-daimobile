@@ -50,9 +50,9 @@ References to the various topics:
 <h2>Execution</h2>
 To run test script in the command line:<br/>
 
-<code>robot -d results/ tests/androidNativeApp.robot </code><br/>
-<code>robot -d results/ tests/*</code>
-
+<code>robot --log-level INFO -d results/ tests/androidNativeApp.robot </code><br/>
+<code>robot --log-level DEBUG -d results/ tests/*</code>
+<code>pabot --processes 19 --testlevelsplit tests/examples/daiPassingQuick.robot</code>
 
 <h2>Tests</h2>
 <br>There are a few tests ready to run already<br/>

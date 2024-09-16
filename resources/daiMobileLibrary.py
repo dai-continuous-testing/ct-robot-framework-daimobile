@@ -14,7 +14,7 @@ from capabilities.appiumCapabilities import *
 from elementLocators.android_locators import android_locators
 from elementLocators.ios_locators import ios_locators
 
-log_level = "INFO"      # DEBUG => to add traceback on error
+log_level = "INFO"
 
 def handle_exceptions(method):
                 @wraps(method)
@@ -24,18 +24,19 @@ def handle_exceptions(method):
                                 error = None
                                 method_name = method.__name__  # Get the name of the decorated method
                                 try:
+                                        log_lvl = self.build_in.get_variable_value('${LOG LEVEL}', log_level)
                                         signature = inspect.signature(method)
                                         parameters = list(signature.parameters.values())[1:]  # Skip the first parameter (self)
                                         # Construct the arguments string for logging
                                         arguments_str = ' | '.join(f"{param.name}={args[i + 1]}" for i, param in enumerate(parameters))
-                                        if log_level == 'DEBUG':
-                                                BuiltIn().log_to_console("args: {}".format(arguments_str))
                                         method_name_str = str(method_name).replace("_", " ")
+                                        if log_lvl == 'DEBUG':
+                                                self.build_in.log_to_console("\nmethod: {}, args: {}".format(method_name, arguments_str))
                                         self.start_steps_group(name=f"{method_name_str} | {arguments_str}")
                                         method(*args, **kwargs)
                                 except Exception as e:
                                         error = e
-                                        if log_level == 'DEBUG':
+                                        if log_lvl == 'DEBUG':
                                                 traceback_str = traceback.format_exc()
                                                 self.build_in.log_to_console(traceback_str)
                                         self.build_in.fail("Exception: {}".format(error))
@@ -70,11 +71,12 @@ class daiMobileLibrary(AppiumLibrary):
         def start_session(self, suite_name, **kwargs):
                 cloudUrl = self.build_in.get_variable_value("${cloudUrl}")
                 accessKey = self.build_in.get_variable_value("${accessKey}")
+                accessKeyEnvVarName = self.build_in.get_variable_value("${accessKeyEnvVarName}")
                 # RECOMMENDED: use environment variables for accessKey for security reasons
-                # accessKey = os.environ[accessKeyEnvVarName]
-                # if not accessKey:
-                #         self.build_in.fail("Access key is empty, please set accessKey as a environment variable and provide its name in the accessKeyEnvVarName variable.")
-                #         return -1
+                accessKey = os.environ[accessKeyEnvVarName]
+                if not accessKey:
+                        self.build_in.fail("Access key '{}' is empty, please set accessKey as a environment variable and provide its name in the accessKeyEnvVarName variable.".format(accessKeyEnvVarName))
+                        return -1
 
                 self.build_in.log_to_console("testing value of cloudUrl: {}".format(cloudUrl))
 
@@ -85,6 +87,12 @@ class daiMobileLibrary(AppiumLibrary):
                 test_name = suite_name
                 device_query = deviceQuery
                 self.bundle_id = bundleId
+                self.app = appCloudName
+
+                if self.app:
+                        self.build_in.log_to_console("app: {}".format(self.app))
+                else:
+                        self.build_in.log_to_console("app: is None or empty")
 
                 self.build_in.log_to_console("cloudUrl: {}".format(cloudUrl))
                 self.build_in.log_to_console("platformName: {}".format(self.platform_name))
@@ -94,9 +102,13 @@ class daiMobileLibrary(AppiumLibrary):
                 self.build_in.log_to_console("suiteName in reporter: {}".format(test_name))
                 self.build_in.log_to_console("deviceQuery: {}".format(device_query))
                 self.build_in.log_to_console("bundleId: {}".format(bundleId))
+                self.build_in.log_to_console("log level: {}".format(self.build_in.get_variable_value("${LOG LEVEL}")))
 
                 if self.platform_name in ["ios", "iOS", "IOS"]:
-                        app="cloud:{}".format(self.bundle_id)
+                        if not self.app:
+                                app="cloud:{}".format(self.bundle_id)
+                        else:
+                                app = appCloudName
                         result = self.open_application( self.build_in.get_variable_value("${cloudUrl}"),
                                                         accessKey=accessKey,
                                                         app=app,
@@ -107,7 +119,10 @@ class daiMobileLibrary(AppiumLibrary):
                                                         deviceQuery=device_query, 
                                                         kwargs=kwargs)
                 elif self.platform_name in ["android", "Android", "ANDROID"]:
-                        app="cloud:{}/{}".format(self.app_package, self.app_activity)
+                        if not self.app:
+                                app="cloud:{}/{}".format(self.app_package, self.app_activity)
+                        else:
+                                app=appCloudName
                         result = self.open_application( self.build_in.get_variable_value("${cloudUrl}"),
                                                         accessKey=accessKey,
                                                         app=app,
@@ -137,10 +152,21 @@ class daiMobileLibrary(AppiumLibrary):
                 self.report("Lord Voldemort hates Harry Potter", False, True)
 
         def get_platform_specific_locator(self, locator_name):
+                '''This method is used to get the platform specific locator from the dictionary'''
+                if locator_name.startswith("xpath=") or locator_name.startswith("id="):
+                        return locator_name;
                 if self.platform_name in ["ios", "iOS", "IOS"]:
-                        return ios_locators[locator_name]
+                        if ios_locators[locator_name]:
+                                return ios_locators[locator_name]
+                        else:
+                                self.build_in.fail("Locator not found in the ios_locators dictionary: {}".format(locator_name))
+                                return -1
                 elif self.platform_name in ["android", "Android", "ANDROID"]:
-                        return android_locators[locator_name]
+                        if android_locators[locator_name]:
+                                return android_locators[locator_name]
+                        else:
+                                self.build_in.fail("Locator not found in the android_locators dictionary: {}".format(locator_name))
+                                return -1
                 else:
                         self.build_in.fail("platform is not supported: {}".format(self.platform_name))
                         return -1
@@ -148,7 +174,13 @@ class daiMobileLibrary(AppiumLibrary):
         # REPORTER ------------------------------------------------------------------------
 
         def report(self, message, status, teardown=False):
-                if isinstance(status, bool):
+                # self.build_in.log_to_console("\nreporting message: {}, status: {}".format(message, status))
+                if isinstance(status, bool) and isinstance(message, str):
+                        if self.build_in.get_variable_value("${LOG LEVEL}") == 'DEBUG':
+                                self.build_in.log_to_console("\nreporting message: {}, status: {}".format(message, status))
+                        if not message:
+                                message = "No info"
+                        message = message.split("\n")[0] # takes only 1st line of the message
                         self.execute_script("seetest:client.report(\"{}\", {})".format(message, status))        # in case status=False report will not be failed
                         if not status and teardown:
                                 # if you need to force exception in robot (has impact on the report structure, not recommended)
@@ -166,6 +198,10 @@ class daiMobileLibrary(AppiumLibrary):
                 '''Start group inside another keyword, allows to pass that top level keyword as a group name to DAI reporter'''
                 self.execute_script("seetest:client.startStepsGroup(\"{}\")".format(self._get_top_keyword_name()))
 
+        def set_device_location(self, latitude, longitude):
+                '''Set device location for the test''' 
+                self.execute_script("seetest:client.setLocation({},{})".format(latitude, longitude))
+        
         def stop_group(self):
                 self.stop_steps_group()
 
@@ -187,7 +223,7 @@ class daiMobileLibrary(AppiumLibrary):
         def steps_group_action_teardown(self, error=None):
                 if error:
                         self.set_group_status("Failed")
-                        self.execute_script("seetest:client.report(\"{}\", false)".format(error))
+                        self.report("Error occurred in the test: {}".format(error), False)
                 self.stop_steps_group()
         
         # SUITES ------------------------------------------------------------------------
@@ -198,25 +234,31 @@ class daiMobileLibrary(AppiumLibrary):
         def add_test_property(self, key, value):
                 if log_level == 'DEBUG':
                         self.build_in.log_to_console("trying to add test property with key: {}, and value: {}".format(key, value))
+                value = value.split("\n")[0] # takes only 1st line of the value
                 self.execute_script("seetest:client.addTestProperty(\"{}\", \"{}\")".format(key, value))
         
         def get_test_property(self, property_name):
                 property = self.get_capability(property_name)
-                self.build_in.log_to_console("{}: {}".format(property_name, property))
+                self.build_in.log_to_console("\n{}: {}".format(property_name, property))
+                # TODO remove after POC
+                if property_name == 'udid' and property == 'G0W1AR04037200FU':
+                        self.build_in.fail(f"Device {property} to be mocked as dirty")
                 return property
 
         def perform_suite_setup_actions(self, suiteName, with_unique_stamp=False, **kwargs):
                 self.build_in.log_to_console("suiteName: {}".format(suiteName))
+                self.build_in.log_to_console("with_unique_stamp: {}".format(with_unique_stamp))
+                self.build_in.log_to_console("kwargs: {}".format(kwargs))
                 if with_unique_stamp:
                         self.start_session("{} {}".format(suiteName, datetime.now().strftime('%Y%m%d_%H%M%S')), kwargs=kwargs)
                 else:
                         self.start_session(suiteName, kwargs=kwargs)
-                self.start_steps_group("perform suite setup actions")
+                self.start_steps_group("Preparing Test Suite")
                 self.register_suite_name(suiteName)
                 self.stop_steps_group()
 
         def perform_suite_teardown_actions(self):
-                self.start_steps_group("perform suite teardown actions")
+                self.start_steps_group("Test Suite Summary")
                 suite_status = self.build_in.get_variable_value("${SUITE_STATUS}")
                 self.build_in.log_to_console("Suite status is: {}".format(suite_status))
 
@@ -225,7 +267,14 @@ class daiMobileLibrary(AppiumLibrary):
                                 text_for_reporter = "Scenario: '{}' passed".format(test_result['test_case_name'])
                         elif not test_result['test_status']:
                                 text_for_reporter = "Scenario: '{}' failed with result: {}".format(test_result['test_case_name'], test_result['test_failure_cause'])
-                        self.report(message=text_for_reporter, status=test_result['test_status'])
+                        else:
+                                text_for_reporter = "Test logic error: please check test scripts to debug the issue"
+                        try:
+                                # self.build_in.log_to_console("Reporting test result: {}".format(text_for_reporter))
+                                # self.build_in.log_to_console("Status: {} of type: {}".format(test_result['test_status'], type(test_result['test_status'])))
+                                self.report(message=text_for_reporter, status=test_result['test_status'])
+                        except Exception as e: 
+                                self.build_in.log_to_console("Error in reporting test result: {}".format(e))
 
                 text_separator = ' | '
                 result_text = text_separator.join(self.failed_test_names)
@@ -245,9 +294,9 @@ class daiMobileLibrary(AppiumLibrary):
         def register_test_name(self, name: str, status: str):
                 if status in ['PASS', 'FAIL']:
                         if status == 'PASS':
-                                self.add_test_property(name, "passed")
+                                self.add_test_property("test: "+name, "passed")
                         else:
-                                self.add_test_property(name, "failed")
+                                self.add_test_property("test: "+name, "failed")
                 
 
         def register_test_tags(self):
@@ -273,7 +322,7 @@ class daiMobileLibrary(AppiumLibrary):
                         elif self.platform_name in ["android", "Android", "ANDROID"]:
                                 self.activate_application(self.app_package)
                 else:
-                        self.report("Application was not activated in test setup.")
+                        self.report("Application was not activated in test setup.", True)
                 self.stop_steps_group()
 
         def perform_test_teardown_actions(self, with_app_activation=True):
@@ -290,9 +339,11 @@ class daiMobileLibrary(AppiumLibrary):
                         test_msg = self.build_in.get_variable_value("${TEST_MESSAGE}")
                         test_entry = {"test_case_name": test_name, "test_failure_cause": test_msg, "test_status": False}
                         self.test_results.append(test_entry)
-                        self.failed_test_names.append(test_name)
-                        self.add_test_property("error in: {}".format(test_name), "{}".format(test_msg))
-                        self.report(test_msg, False)
+                        self.failed_test_names.append(test_msg)
+                        if test_name and test_msg:
+                                # self.build_in.log_to_console("\nerror msg: {}".format(test_msg))
+                                self.add_test_property("error in: {}".format(test_name), " msg: {}".format(test_msg))
+                                self.report("msg: {}".format(test_msg), False)
                 elif test_status == 'PASS':
                         test_entry = {"test_case_name": test_name, "test_failure_cause": "", "test_status": True}
                         self.test_results.append(test_entry)
@@ -340,26 +391,32 @@ class daiMobileLibrary(AppiumLibrary):
         @handle_exceptions
         def input_text(self, locator, text):
                 locator = self.get_platform_specific_locator(locator)
+                if log_level == 'DEBUG':
+                        self.build_in.log_to_console("\nDEBUG | locator: {}, text: {}".format(locator, text))
                 return super().input_text(locator, text)
 
         @keyword
         @handle_exceptions
         def page_should_contain_element(self, locator, loglevel='INFO'):
+                locator = self.get_platform_specific_locator(locator)
                 return super().page_should_contain_element(locator, loglevel=loglevel)
         
         @keyword
         @handle_exceptions
         def page_should_not_contain_element(self, locator, loglevel='INFO'):
+                locator = self.get_platform_specific_locator(locator)
                 return super().page_should_not_contain_element(locator, loglevel=loglevel)
         
         @keyword
         @handle_exceptions
         def page_should_contain_text(self, locator, loglevel='INFO'):
+                locator = self.get_platform_specific_locator(locator)
                 return super().page_should_contain_text(locator, loglevel=loglevel)
         
         @keyword
         @handle_exceptions
         def page_should_not_contain_text(self, locator, loglevel='INFO'):
+                locator = self.get_platform_specific_locator(locator)
                 return super().page_should_not_contain_text(locator, loglevel=loglevel)
 
         @keyword
@@ -375,6 +432,7 @@ class daiMobileLibrary(AppiumLibrary):
         @keyword
         @handle_exceptions
         def wait_until_element_is_visible(self, locator, timeout=None, error=None):
+                locator = self.get_platform_specific_locator(locator)
                 return super().wait_until_element_is_visible(locator, timeout, error)
 
         @keyword
@@ -385,6 +443,7 @@ class daiMobileLibrary(AppiumLibrary):
         @keyword
         @handle_exceptions
         def wait_until_page_contains_element(self, locator, timeout=None, error=None):
+                locator = self.get_platform_specific_locator(locator)
                 return super().wait_until_page_contains_element(locator, timeout, error)
         
         @keyword
@@ -395,8 +454,46 @@ class daiMobileLibrary(AppiumLibrary):
         @keyword
         @handle_exceptions
         def wait_until_page_does_not_contain_element(self, locator, timeout=None, error=None):
+                locator = self.get_platform_specific_locator(locator)
                 return super().wait_until_page_does_not_contain_element(locator, timeout, error)
 
+        @keyword
+        @handle_exceptions
+        def input_password(self, locator, text):
+                locator = self.get_platform_specific_locator(locator)
+                return super().input_password(locator, text)
+        
+        @keyword
+        @handle_exceptions
+        def clear_text(self, locator):
+                locator = self.get_platform_specific_locator(locator)
+                return super().clear_text(locator)
+
+        @keyword
+        @handle_exceptions
+        def scroll(self, start_locator, end_locator):
+                start_locator = self.get_platform_specific_locator(start_locator)
+                end_locator = self.get_platform_specific_locator(end_locator)
+                return super().scroll(start_locator, end_locator)
+        
+        @keyword
+        @handle_exceptions
+        def scroll_element_into_view(self, locator):
+                locator = self.get_platform_specific_locator(locator)
+                return super().scroll_element_into_view(locator)
+        
+        @keyword
+        @handle_exceptions
+        def scroll_down(self, locator):
+                locator = self.get_platform_specific_locator(locator)
+                return super().scroll_down(locator)
+        
+        @keyword
+        @handle_exceptions
+        def scroll_up(self, locator):
+                locator = self.get_platform_specific_locator(locator)
+                return super().scroll_up(locator)
+        
 
         # DAI FEATURES ------------------------------------------------------------------------
 
@@ -433,3 +530,5 @@ class daiMobileLibrary(AppiumLibrary):
         @handle_exceptions
         def activate_voice_assistance(self, command="open google"):
                 return self.execute_script(f"seetest:client.activateVoiceAssistance(\"{command}\")")
+
+        
