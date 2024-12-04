@@ -14,6 +14,7 @@ from capabilities.appiumCapabilities import *
 from elementLocators.android_locators import android_locators
 from elementLocators.ios_locators import ios_locators
 
+
 log_level = "INFO"
 
 def handle_exceptions(method):
@@ -61,6 +62,7 @@ class daiMobileLibrary(AppiumLibrary):
                 self.failed_test_names = []
                 self.test_results = []
                 self.build_in.log_to_console("\nInitializing digital.ai library 1.1\n")
+                self.unique_stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
         def _start_keyword(self, name, attrs):
                 self.keywords.append(name)
@@ -240,9 +242,6 @@ class daiMobileLibrary(AppiumLibrary):
         def get_test_property(self, property_name):
                 property = self.get_capability(property_name)
                 self.build_in.log_to_console("\n{}: {}".format(property_name, property))
-                # TODO remove after POC
-                if property_name == 'udid' and property == 'G0W1AR04037200FU':
-                        self.build_in.fail(f"Device {property} to be mocked as dirty")
                 return property
 
         def perform_suite_setup_actions(self, suiteName, with_unique_stamp=False, **kwargs):
@@ -255,6 +254,8 @@ class daiMobileLibrary(AppiumLibrary):
                         self.start_session(suiteName, kwargs=kwargs)
                 self.start_steps_group("Preparing Test Suite")
                 self.register_suite_name(suiteName)
+                self.add_test_property("unique_stamp", self.unique_stamp)
+                
                 self.stop_steps_group()
 
         def perform_suite_teardown_actions(self):
@@ -315,14 +316,17 @@ class daiMobileLibrary(AppiumLibrary):
                 self.start_steps_group("perform test setup actions")
         
                 self.register_test_tags()
-
-                if with_app_activation:
-                        if self.platform_name in ["ios", "iOS", "IOS"]:
-                                self.activate_application(self.bundle_id)
-                        elif self.platform_name in ["android", "Android", "ANDROID"]:
-                                self.activate_application(self.app_package)
-                else:
-                        self.report("Application was not activated in test setup.", True)
+                try:
+                        if with_app_activation:
+                                if self.platform_name in ["ios", "iOS", "IOS"]:
+                                        self.activate_application(self.bundle_id)
+                                elif self.platform_name in ["android", "Android", "ANDROID"]:
+                                        self.activate_application(self.app_package)
+                        else:
+                                self.report("Application was not activated in test setup.", True)
+                except Exception as e:
+                        self.build_in.fail("Exception: {}".format(e))
+                        self.build_in.log_to_console("Exception: {}".format(e))
                 self.stop_steps_group()
 
         def perform_test_teardown_actions(self, with_app_activation=True):
@@ -531,4 +535,16 @@ class daiMobileLibrary(AppiumLibrary):
         def activate_voice_assistance(self, command="open google"):
                 return self.execute_script(f"seetest:client.activateVoiceAssistance(\"{command}\")")
 
-        
+
+        # DAI FEATURES ------------------------------------------------------------------------
+
+        @keyword
+        @handle_exceptions
+        def fail_on_purpose(self):
+                udid = self.get_test_property("udid")
+                if udid in ("G0W1AR04037200FU"):
+                        self.build_in.fail("Failed to install")
+                elif udid in ("R3CT605BNDF"):
+                        self.build_in.fail("Element not found")
+                else:
+                        pass
