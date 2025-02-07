@@ -62,12 +62,17 @@ deviceQuery="@os='ios' and @version >= 17.4"
 [Device Query](https://docs.digital.ai/bundle/TE/page/device_queries.html)
 
 <h2>Execution</h2>
-To run test script in the command line:<br/>
+Example commands to run tests:<br/>
+<pre>
+robot --log-level INFO -d results/ tests/examples/daiFeatures.robot 
+robot --log-level DEBUG -d results/ tests/*
+</pre>
 
-<code>robot --log-level INFO -d results/ tests/examples/daiFeatures.robot </code><br/>
-<code>robot --log-level DEBUG -d results/ tests/*</code>
-<code>pabot --processes 19 --testlevelsplit tests/examples/daiFeatures.robot</code>
-<code>robot --log-level INFO -d results/ tests/examples/daiPassingQuick.robot</code>
+<body>Example commands to run tests in parallel:</body><br/>
+<pre>
+pabot --testlevelsplit tests/examples/daiFeatures.robot
+pabot --processes 4 --testlevelsplit tests/examples/daiFeatures.robot
+</pre>
 
 <h2>Tests</h2>
 <br>There are a few tests ready to run already<br/>
