@@ -61,7 +61,7 @@ class daiMobileLibrary(AppiumLibrary):
                 self.build_in = BuiltIn()
                 self.failed_test_names = []
                 self.test_results = []
-                self.build_in.log_to_console("\nInitializing digital.ai library 1.2\n")
+                self.library_version = "1.2"
                 self.unique_stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
         def _start_keyword(self, name, attrs):
@@ -80,7 +80,7 @@ class daiMobileLibrary(AppiumLibrary):
                         self.build_in.fail("Access key '{}' is empty, please set accessKey as a environment variable and provide its name in the accessKeyEnvVarName variable.".format(accessKeyEnvVarName))
                         return -1
 
-                self.build_in.log_to_console("testing value of cloudUrl: {}".format(cloudUrl))
+                # self.build_in.log_to_console("testing value of cloudUrl: {}".format(cloudUrl))
 
                 self.platform_name = platformName
                 self.app_package = androidPackage
