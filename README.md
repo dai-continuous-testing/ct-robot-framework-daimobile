@@ -38,10 +38,22 @@ Use the class resources/daiMobileLibrary.py as a starting point to build on top 
 <code>pip install -r requirements.txt</code>
 <h3>Setup of the tests, Cloud and Device configurations</h3>
 1. Save your cloud access key to an environment variable.<br> 
-2. Then add that name and cloud URL in <code>cloudCredentials.robot</code><br> 
+2. Then add that name and cloud UR + "wd/hub" in <code>cloudCredentials.robot</code><br>
 3. Next please set platformName and deviceQuery in <code>appiumCapabilities.py</code>.<br><br>
 
-References to the various topics:
+Example of <code>cloudCredentials.robot</code>:
+<pre>
+*** Variables ***
+${cloudUrl}	                https://uscloud.experitest.com/wd/hub
+${accessKeyEnvVarName}	        CLOUD_ACCESS_KEY
+</pre>
+
+Example deviceQuery in  <code>appiumCapabilities.py</code>:
+<pre>
+deviceQuery="@os='ios' and @version >= 17.4"   
+</pre>
+
+<h3>References to the various topics:</h3>
 
 [Obtain your Access Key](https://docs.digital.ai/bundle/TE/page/obtain_your_access_key.html)
 
