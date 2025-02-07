@@ -1,7 +1,7 @@
 *** Settings ***
 Library    ../../resources/daiMobileLibrary.py
 
-Resource    ../../resources/cloudCredentialsLOCAL.robot
+Resource    ../../resources/cloudCredentials.robot
 
 Suite Setup  	Start Session    Example Robot Framework | After
 Suite Teardown	Perform Suite Teardown Actions

@@ -1,7 +1,7 @@
 *** Settings ***
 Library    ../../resources/daiMobileLibrary.py
 
-Resource    ../../resources/cloudCredentialsLOCAL.robot
+Resource    ../../resources/cloudCredentials.robot
 Resource    ../../steps/stepsExperiBank.robot
 
 

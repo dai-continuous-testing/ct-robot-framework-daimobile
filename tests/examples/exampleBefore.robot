@@ -1,9 +1,9 @@
 *** Settings ***
 Library    AppiumLibrary
 
-Resource    ../../resources/cloudCredentialsLOCAL.robot
+Resource    ../../resources/cloudCredentials.robot
 
-Suite Setup  	Start Session    Example Robot Framework | Before
+Suite Setup  	Start Session Before   Example Robot Framework | Before
 Suite Teardown	Close Application
 
 *** Comments ***
@@ -19,22 +19,22 @@ ${DEVICE_QUERY}          @os='${PLATFORM_NAME}' and @category='PHONE'
 ${ANDROID_PACKAGE}       com.experitest.ExperiBank
 ${ANDROID_ACTIVITY}      .LoginActivity
 
-# *** Keywords ***
-# Start Session
-#     [Arguments]   ${SUITE_NAME}
-#     Open Application
-#         ...			${cloudUrl}	digitalai:accessKey=${accessKey}
-#         ...			app=cloud:${ANDROID_PACKAGE}/${ANDROID_ACTIVITY}
-#         ...			platformName=${PLATFORM_NAME}	
-#         ...         appPackage=${ANDROID_PACKAGE}
-#         ...			appActivity=${ANDROID_ACTIVITY}
-#         ...         appiumVersion=${APPIUM_VERSION}
-#         ...         testName=${SUITE_NAME} 
-#         ...         deviceQuery=${DEVICE_QUERY}
+*** Keywords ***
+Start Session Before
+    [Arguments]   ${SUITE_NAME}
+    AppiumLibrary.Open Application
+        ...			${cloudUrl}	digitalai:accessKey=${accessKey}
+        ...			app=cloud:${ANDROID_PACKAGE}/${ANDROID_ACTIVITY}
+        ...			platformName=${PLATFORM_NAME}	
+        ...         appPackage=${ANDROID_PACKAGE}
+        ...			appActivity=${ANDROID_ACTIVITY}
+        ...         appiumVersion=${APPIUM_VERSION}
+        ...         testName=${SUITE_NAME} 
+        ...         deviceQuery=${DEVICE_QUERY}
 
 *** Test Cases ***
 Login and perform payment
-	Portrait                                                                        
+	AppiumLibrary.Portrait                                                                        
 	AppiumLibrary.Input Text	        xpath=//*[@text='Username']	company                                 
 	AppiumLibrary.Input Text	        xpath=//*[@text='Password']	company
 	AppiumLibrary.Click Element	    xpath=//*[@resource-id='com.experitest.ExperiBank:id/loginButton']      
