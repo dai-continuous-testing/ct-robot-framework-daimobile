@@ -61,7 +61,7 @@ class daiMobileLibrary(AppiumLibrary):
                 self.build_in = BuiltIn()
                 self.failed_test_names = []
                 self.test_results = []
-                self.build_in.log_to_console("\nInitializing digital.ai library 1.1\n")
+                self.build_in.log_to_console("\nInitializing digital.ai library 1.2\n")
                 self.unique_stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
         def _start_keyword(self, name, attrs):
@@ -225,7 +225,8 @@ class daiMobileLibrary(AppiumLibrary):
         def steps_group_action_teardown(self, error=None):
                 if error:
                         self.set_group_status("Failed")
-                        self.report("Error occurred in the test: {}".format(error), False)
+                        safe_error = str(error).replace('"', '')
+                        self.report("Error occurred in the test: {}".format(safe_error), False)
                 self.stop_steps_group()
         
         # SUITES ------------------------------------------------------------------------
@@ -267,6 +268,7 @@ class daiMobileLibrary(AppiumLibrary):
                         if test_result['test_status']:
                                 text_for_reporter = "Scenario: '{}' passed".format(test_result['test_case_name'])
                         elif not test_result['test_status']:
+                                # text_for_reporter = "Scenario: '{}' failed".format(test_result['test_case_name'])
                                 text_for_reporter = "Scenario: '{}' failed with result: {}".format(test_result['test_case_name'], test_result['test_failure_cause'])
                         else:
                                 text_for_reporter = "Test logic error: please check test scripts to debug the issue"
@@ -278,7 +280,7 @@ class daiMobileLibrary(AppiumLibrary):
                                 self.build_in.log_to_console("Error in reporting test result: {}".format(e))
 
                 text_separator = ' | '
-                result_text = text_separator.join(self.failed_test_names)
+                result_text = text_separator.join(self.failed_test_names).replace('"', '')
                 self.build_in.log_to_console("\n>>>><<<<\n"+result_text+"\n>>>><<<<\n")
 
                 if self.failed_test_names:
@@ -341,13 +343,14 @@ class daiMobileLibrary(AppiumLibrary):
 
                 if test_status == "FAIL":
                         test_msg = self.build_in.get_variable_value("${TEST_MESSAGE}")
-                        test_entry = {"test_case_name": test_name, "test_failure_cause": test_msg, "test_status": False}
+                        safe_msg = test_msg.replace('"', '')
+                        test_entry = {"test_case_name": test_name, "test_failure_cause": safe_msg, "test_status": False}
                         self.test_results.append(test_entry)
                         self.failed_test_names.append(test_msg)
-                        if test_name and test_msg:
+                        if test_name and safe_msg:
                                 # self.build_in.log_to_console("\nerror msg: {}".format(test_msg))
-                                self.add_test_property("error in: {}".format(test_name), " msg: {}".format(test_msg))
-                                self.report("msg: {}".format(test_msg), False)
+                                self.add_test_property("error in: {}".format(test_name), " msg: {}".format(safe_msg))
+                                self.report("msg: {}".format(safe_msg), False)
                 elif test_status == 'PASS':
                         test_entry = {"test_case_name": test_name, "test_failure_cause": "", "test_status": True}
                         self.test_results.append(test_entry)
