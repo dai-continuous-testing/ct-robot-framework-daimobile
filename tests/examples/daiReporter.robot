@@ -33,6 +33,6 @@ Test Teardown   Perform Test Teardown Actions
     Login to Experibank using excel    file_path=tests/examples/data.xlsx
     Set Device Location    32.0853    34.7818
 
-# 05.DigitalAI example
-#     Given Login to ExperiBank app
-#     When Click Element    LOGOUT_BUTTON
+05.DigitalAI example
+    Given Login to ExperiBank app
+    When Click Element    LOGOUT_BUTTON

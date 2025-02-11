@@ -1,6 +1,6 @@
 android_locators = {
-    "USERNAME_INPUT": "//*[@resource-id='com.experitest.ExperiBank:id/usernameTextField']",
-    "PASSWORD_INPUT": "//*[@resource-id='com.experitest.ExperiBank:id/passwordTextField']",
+    "USERNAME_INPUT": "xpath=//*[@resource-id='com.experitest.ExperiBank:id/usernameTextField']",
+    "PASSWORD_INPUT": "xpath=//*[@resource-id='com.experitest.ExperiBank:id/passwordTextField']",
     "LOGIN_BUTTON": "xpath=//*[@text='Login']",
     "MAKE_PAYMENT_BUTTON": "id=com.experitest.ExperiBank:id/makePaymentButton",
     "SEND_PAYMENT_BUTTON": "id=com.experitest.ExperiBank:id/sendPaymentButton",

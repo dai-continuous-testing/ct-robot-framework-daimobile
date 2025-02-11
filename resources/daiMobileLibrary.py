@@ -8,7 +8,7 @@ from robot.libraries.BuiltIn import BuiltIn
 from robot.api.deco import keyword
 from functools import wraps
 
-from timeouts import global_timeout
+from timeouts import global_long_timeout, global_timeout
 from capabilities.appiumCapabilities import *
 
 from elementLocators.android_locators import android_locators
@@ -104,7 +104,7 @@ class daiMobileLibrary(AppiumLibrary):
                 self.build_in.log_to_console("suiteName in reporter: {}".format(test_name))
                 self.build_in.log_to_console("deviceQuery: {}".format(device_query))
                 self.build_in.log_to_console("bundleId: {}".format(bundleId))
-                self.build_in.log_to_console("log level: {}".format(self.build_in.get_variable_value("${LOG LEVEL}")))
+                self.build_in.log_to_console("log level: {}\n".format(self.build_in.get_variable_value("${LOG LEVEL}")))
 
                 if self.platform_name in ["ios", "iOS", "IOS"]:
                         if not self.app:
@@ -281,7 +281,8 @@ class daiMobileLibrary(AppiumLibrary):
 
                 text_separator = ' | '
                 result_text = text_separator.join(self.failed_test_names).replace('"', '')
-                self.build_in.log_to_console("\n>>>><<<<\n"+result_text+"\n>>>><<<<\n")
+                if log_level == 'DEBUG':
+                        self.build_in.log_to_console("\n>>>><<<<\n"+result_text+"\n>>>><<<<\n")
 
                 if self.failed_test_names:
                         self.set_report_status(False, result_text)
@@ -396,6 +397,13 @@ class daiMobileLibrary(AppiumLibrary):
         
         @keyword
         @handle_exceptions
+        def wait_and_click_element(self, locator, timeout=global_timeout):
+                locator = self.get_platform_specific_locator(locator)
+                super().wait_until_page_contains_element(locator, timeout)
+                return super().click_element(locator)
+        
+        @keyword
+        @handle_exceptions
         def input_text(self, locator, text):
                 locator = self.get_platform_specific_locator(locator)
                 if log_level == 'DEBUG':
@@ -433,7 +441,7 @@ class daiMobileLibrary(AppiumLibrary):
 
         @keyword
         @handle_exceptions
-        def wait_activity(self, activity, timeout=global_timeout, interval=1):
+        def wait_activity(self, activity, timeout=global_long_timeout, interval=1):
                 return super().wait_activity(activity, timeout, interval)
 
         @keyword
@@ -551,3 +559,7 @@ class daiMobileLibrary(AppiumLibrary):
                         self.build_in.fail("Element not found")
                 else:
                         pass
+
+        # IOS FEATURES ------------------------------------------------------------------------
+
+        # ANDROID FEATURES ------------------------------------------------------------------------
