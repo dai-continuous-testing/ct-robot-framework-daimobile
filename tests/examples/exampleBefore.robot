@@ -37,19 +37,19 @@ Login and perform payment
 	AppiumLibrary.Portrait                                                                        
 	AppiumLibrary.Input Text	        xpath=//*[@text='Username']	company                                 
 	AppiumLibrary.Input Text	        xpath=//*[@text='Password']	company
-	AppiumLibrary.Click Element	    xpath=//*[@resource-id='com.experitest.ExperiBank:id/loginButton']      
-	BuiltIn.Sleep	    5s
-	AppiumLibrary.Click Element	    id=com.experitest.ExperiBank:id/makePaymentButton
+	AppiumLibrary.Click Element	        xpath=//*[@resource-id='com.experitest.ExperiBank:id/loginButton']      
+	BuiltIn.Sleep	                    5s
+	AppiumLibrary.Click Element	        id=com.experitest.ExperiBank:id/makePaymentButton
 	AppiumLibrary.Input Text	        id=com.experitest.ExperiBank:id/phoneTextField		0501234567
 	AppiumLibrary.Input Text	        id=com.experitest.ExperiBank:id/nameTextField		John Snow
 	AppiumLibrary.Input Text	        id=com.experitest.ExperiBank:id/amountTextField		50
 	AppiumLibrary.Input Text	        id=com.experitest.ExperiBank:id/countryTextField	Switzerland
-	AppiumLibrary.Click Element	    id=com.experitest.ExperiBank:id/sendPaymentButton
-	AppiumLibrary.Click Element	    id=android:id/button1
-	AppiumLibrary.Click Element	    xpath=//*[@text='Logout']
+	AppiumLibrary.Click Element	        id=com.experitest.ExperiBank:id/sendPaymentButton
+	AppiumLibrary.Click Element	        id=android:id/button1
+	AppiumLibrary.Click Element	        xpath=//*[@text='Logout']
 
 Invalid login
 	AppiumLibrary.Input Text	        xpath=//*[@text='Username']    wrong
 	AppiumLibrary.Input Text	        xpath=//*[@text='Password']    company
-	AppiumLibrary.Click Element    	id=com.experitest.ExperiBank:id/loginButton
+	AppiumLibrary.Click Element    	    id=com.experitest.ExperiBank:id/loginButton
 	AppiumLibrary.Wait Until Page Contains Element    //*[@text='_INVALID_TO_FAIL_THE_TEST']

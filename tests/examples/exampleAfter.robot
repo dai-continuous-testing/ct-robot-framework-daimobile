@@ -19,7 +19,7 @@ Login and perform payment
 	Input Text	        xpath=//*[@text='Username']	company                                 
 	Input Text	        xpath=//*[@text='Password']	company
 	Click Element	    xpath=//*[@resource-id='com.experitest.ExperiBank:id/loginButton']      
-	BuiltIn.Sleep	    5s
+	Sleep	            5s
 	Click Element	    id=com.experitest.ExperiBank:id/makePaymentButton
 	Input Text	        id=com.experitest.ExperiBank:id/phoneTextField		0501234567
 	Input Text	        id=com.experitest.ExperiBank:id/nameTextField		John Snow

@@ -4,6 +4,7 @@ import traceback
 from datetime import datetime
 
 from AppiumLibrary import AppiumLibrary
+from SeleniumLibrary import SeleniumLibrary
 from robot.libraries.BuiltIn import BuiltIn
 from robot.api.deco import keyword
 from functools import wraps
@@ -61,7 +62,7 @@ class daiMobileLibrary(AppiumLibrary):
                 self.build_in = BuiltIn()
                 self.failed_test_names = []
                 self.test_results = []
-                self.library_version = "1.2"
+                self.library_version = "1.3"
                 self.unique_stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
         def _start_keyword(self, name, attrs):
@@ -397,6 +398,53 @@ class daiMobileLibrary(AppiumLibrary):
         
         @keyword
         @handle_exceptions
+        def click_with_offset(self, locator, x_offset, y_offset, duration=500):
+                locator = self.get_platform_specific_locator(locator)
+                element_location = self.get_element_location(locator)
+                if log_level == 'DEBUG':
+                        self.build_in.log_to_console("\nElement location: {}".format(element_location))
+                element_x = element_location['x']
+                element_y = element_location['y']
+                if log_level == 'DEBUG':
+                        self.build_in.log_to_console("\nOffset: x: {}, y: {}".format(x_offset, y_offset))
+                tap_x = int(element_x) + int(x_offset)
+                tap_y = int(element_y) + int(y_offset)
+                if log_level == 'DEBUG':
+                        self.build_in.log_to_console("\nTapping at x: {}, y: {}".format(tap_x, tap_y))
+                return super().tap_with_positions(duration, (tap_x, tap_y))
+        
+        @keyword
+        @handle_exceptions
+        def click_with_offset_ratio(self, locator, percent_x, percent_y, duration=500):
+                """
+                Clicks on the element with the offset calculated as a percentage of the element's width and height\n
+                @param locator: locator of the element (xpath, id, etc.)\n
+                @param percent_x: percentage of the element's width in range 0-1 eg. 0.94 for 94%\n
+                @param percent_y: percentage of the element's height in range 0-1 eg. 0.5 for 50%\n
+                @param duration: duration of the tap in milliseconds\n
+                """
+                locator = self.get_platform_specific_locator(locator)
+                # element_location = self.get_element_location(locator)
+                element_rect = self.get_element_rect(locator)
+                if log_level == 'DEBUG':
+                        self.build_in.log_to_console("\nElement location: {}".format(element_rect))
+                element_x = element_rect['x']
+                element_y = element_rect['y']
+                element_width = element_rect['width']
+                element_height = element_rect['height']
+                offset_x = int(int(element_width) * float(percent_x))
+                offset_y = int(int(element_height) * float(percent_y))
+                if log_level == 'DEBUG':
+                        self.build_in.log_to_console("\nOffset: x: {}, y: {}".format(offset_x, offset_y))
+                tap_x = int(element_x) + int(offset_x)
+                tap_y = int(element_y) + int(offset_y)
+
+                if log_level == 'DEBUG':
+                        self.build_in.log_to_console("\nTapping at x: {}, y: {}".format(tap_x, tap_y))
+                return super().tap_with_positions(duration, (tap_x, tap_y))
+        
+        @keyword
+        @handle_exceptions
         def wait_and_click_element(self, locator, timeout=global_timeout):
                 locator = self.get_platform_specific_locator(locator)
                 super().wait_until_page_contains_element(locator, timeout)
@@ -436,8 +484,40 @@ class daiMobileLibrary(AppiumLibrary):
 
         @keyword
         @handle_exceptions
-        def swipe(self, x_start, x_stop, y_start, y_stop):
-                return super().swipe(start_x=x_start, start_y=y_start, offset_x=x_stop, offset_y=y_stop)
+        def swipe(self, x_start, x_stop, y_start, y_stop, duration=1000):
+                return super().swipe(start_x=x_start, start_y=y_start, offset_x=x_stop, offset_y=y_stop, duration=duration)
+        
+        @keyword
+        @handle_exceptions
+        def swipe_to_element(self, x_start, y_start, element_xpath, duration=1000, direction='up', max_swipes=10, swipe_distance=200):
+                if direction == 'up':
+                        offsetX = 0
+                        offsetY = -swipe_distance
+                elif direction == 'down':
+                        offsetX = 0
+                        offsetY = swipe_distance
+                elif direction == 'left':
+                        offsetX = -swipe_distance
+                        offsetY = 0
+                elif direction == 'right':
+                        offsetX = swipe_distance
+                        offsetY = 0
+
+                for i in range(max_swipes):
+                        try:
+                                super().page_should_contain_element(element_xpath)
+                                return True
+                        except Exception as e:
+                                if log_level == 'DEBUG':
+                                        self.build_in.log_to_console("\nElement not found, swiping...")
+                                self.swipe(x_start, x_start+offsetX, y_start, y_start+offsetY, duration)
+
+                try:
+                        super().page_should_contain_element(element_xpath)
+                        return True
+                except Exception as e:
+                        self.build_in.log_to_console("\nElement not found after swiping; xpath: "+element_xpath)
+                        raise e
 
         @keyword
         @handle_exceptions
@@ -509,6 +589,16 @@ class daiMobileLibrary(AppiumLibrary):
                 locator = self.get_platform_specific_locator(locator)
                 return super().scroll_up(locator)
         
+        @keyword
+        @handle_exceptions
+        def implicit_wait(self, time, reason=""):
+                return self.build_in.sleep(time_=time, reason=reason)
+        
+        @keyword
+        @handle_exceptions
+        def element_should_be_visible(self, locator, loglevel='INFO'):
+                return super().element_should_be_visible(locator, loglevel)
+        
 
         # DAI FEATURES ------------------------------------------------------------------------
 
@@ -546,20 +636,6 @@ class daiMobileLibrary(AppiumLibrary):
         def activate_voice_assistance(self, command="open google"):
                 return self.execute_script(f"seetest:client.activateVoiceAssistance(\"{command}\")")
 
+        # IOS SPECIFIC FEATURES ------------------------------------------------------------------------
 
-        # DAI FEATURES ------------------------------------------------------------------------
-
-        @keyword
-        @handle_exceptions
-        def fail_on_purpose(self):
-                udid = self.get_test_property("udid")
-                if udid in ("G0W1AR04037200FU"):
-                        self.build_in.fail("Failed to install")
-                elif udid in ("R3CT605BNDF"):
-                        self.build_in.fail("Element not found")
-                else:
-                        pass
-
-        # IOS FEATURES ------------------------------------------------------------------------
-
-        # ANDROID FEATURES ------------------------------------------------------------------------
+        # ANDROID SPECIFIC FEATURES ------------------------------------------------------------------------
