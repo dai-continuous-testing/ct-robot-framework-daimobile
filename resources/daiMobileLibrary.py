@@ -73,15 +73,16 @@ class daiMobileLibrary(AppiumLibrary):
         
         def start_session(self, suite_name, **kwargs):
                 cloudUrl = self.build_in.get_variable_value("${cloudUrl}")
-                accessKey = self.build_in.get_variable_value("${accessKey}")
                 accessKeyEnvVarName = self.build_in.get_variable_value("${accessKeyEnvVarName}")
                 # RECOMMENDED: use environment variables for accessKey for security reasons
-                accessKey = os.environ[accessKeyEnvVarName]
+                try:
+                        accessKey = os.environ[accessKeyEnvVarName]
+                except KeyError:
+                        accessKey = self.build_in.get_variable_value("${accessKey}")
+
                 if not accessKey:
                         self.build_in.fail("Access key '{}' is empty, please set accessKey as a environment variable and provide its name in the accessKeyEnvVarName variable.".format(accessKeyEnvVarName))
                         return -1
-
-                # self.build_in.log_to_console("testing value of cloudUrl: {}".format(cloudUrl))
 
                 self.platform_name = platformName
                 self.app_package = androidPackage
@@ -91,6 +92,7 @@ class daiMobileLibrary(AppiumLibrary):
                 device_query = deviceQuery
                 self.bundle_id = bundleId
                 self.app = appCloudName
+                # self.newCommandTimeout = newCommandTimeout
 
                 if self.app:
                         self.build_in.log_to_console("app: {}".format(self.app))
@@ -105,6 +107,8 @@ class daiMobileLibrary(AppiumLibrary):
                 self.build_in.log_to_console("suiteName in reporter: {}".format(test_name))
                 self.build_in.log_to_console("deviceQuery: {}".format(device_query))
                 self.build_in.log_to_console("bundleId: {}".format(bundleId))
+                for key, value in kwargs.items():
+                        self.build_in.log_to_console("kwargs - {}: {}".format(key, value))
                 self.build_in.log_to_console("log level: {}\n".format(self.build_in.get_variable_value("${LOG LEVEL}")))
 
                 if self.platform_name in ["ios", "iOS", "IOS"]:
@@ -119,8 +123,8 @@ class daiMobileLibrary(AppiumLibrary):
                                                         bundleId=self.bundle_id,
                                                         appiumVersion=appium_version,
                                                         testName=test_name,
-                                                        deviceQuery=device_query, 
-                                                        kwargs=kwargs)
+                                                        deviceQuery=device_query,
+                                                        **kwargs)
                 elif self.platform_name in ["android", "Android", "ANDROID"]:
                         if not self.app:
                                 app="cloud:{}/{}".format(self.app_package, self.app_activity)
@@ -135,7 +139,7 @@ class daiMobileLibrary(AppiumLibrary):
                                                         appiumVersion=appium_version,
                                                         testName=test_name,
                                                         deviceQuery=device_query,
-                                                        kwargs=kwargs)
+                                                        **kwargs)
                 else:
                         self.build_in.fail("platformName is not supported: {}".format(self.platform_name))
                         result = -1
@@ -251,9 +255,9 @@ class daiMobileLibrary(AppiumLibrary):
                 self.build_in.log_to_console("with_unique_stamp: {}".format(with_unique_stamp))
                 self.build_in.log_to_console("kwargs: {}".format(kwargs))
                 if with_unique_stamp:
-                        self.start_session("{} {}".format(suiteName, datetime.now().strftime('%Y%m%d_%H%M%S')), kwargs=kwargs)
+                        self.start_session("{} {}".format(suiteName, datetime.now().strftime('%Y%m%d_%H%M%S')), **kwargs)
                 else:
-                        self.start_session(suiteName, kwargs=kwargs)
+                        self.start_session(suiteName, **kwargs)
                 self.start_steps_group("Preparing Test Suite")
                 self.register_suite_name(suiteName)
                 self.add_test_property("unique_stamp", self.unique_stamp)
@@ -599,6 +603,10 @@ class daiMobileLibrary(AppiumLibrary):
         def element_should_be_visible(self, locator, loglevel='INFO'):
                 return super().element_should_be_visible(locator, loglevel)
         
+        @keyword
+        @handle_exceptions
+        def page_should_contain_text(self, text, loglevel='INFO'):
+                return super().page_should_contain_text(text, loglevel)
 
         # DAI FEATURES ------------------------------------------------------------------------
 
