@@ -3,8 +3,8 @@ Library    ExcellentLibrary
 Library    ../resources/daiMobileLibrary.py
 
 *** Comments ***
-This file contains top level steps (keywords) that are later translated into RobotFramework keywords.
-Those top level keywords intent to describe business logic. 
+This file contains top-level steps (behavioral keywords) that are later translated into RobotFramework keywords. 
+These top-level keywords are intended to describe business logic (BDD).
 
 *** Keywords ***
 Login to ExperiBank app

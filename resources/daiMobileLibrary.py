@@ -647,3 +647,16 @@ class daiMobileLibrary(AppiumLibrary):
         # IOS SPECIFIC FEATURES ------------------------------------------------------------------------
 
         # ANDROID SPECIFIC FEATURES ------------------------------------------------------------------------
+
+        # OTHERS ------------------------------------------------------------------------
+        @keyword
+        def count_time_delta(self, start_time, end_time):
+                '''Calculate the time difference
+                @param start_time: start time in format 'yyyy-mm-dd HH:MM:SS'
+                @param end_time: end time in format 'yyyy-mm-dd HH:MM:SS'
+                return seconds
+                '''
+                s_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+                e_time = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+                delta = e_time - s_time
+                return delta.seconds
